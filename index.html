@@ -3820,7 +3820,6 @@ function moveSel(dx, dy) {
 }
 function pickSel(i) {
   if (i === LEVELS.length) { sfx('select'); goTitle(); return; }
-  if (i > unlocked) { sfx('bonk'); shake = .15; return; }
   sfx('select'); startRun(selMode, i);
 }
 function selName(L) { const n = L.name.toUpperCase(); return n.length > 22 ? (L.short || L.name).toUpperCase() : n; }
@@ -3834,7 +3833,7 @@ function drawSelect() {
   if (selMode === 'distance') { bigTxt('GO THE DISTANCE', W / 2, 8, 16, '#fff6e0', '#c84a1c'); txt('Pick a location', W / 2, 34, '#8fe0ff', 8, 'center'); }
   else bigTxt('SELECT LEVEL', W / 2, 12, 16, '#fff6e0', '#c84a1c');
   for (let i = 0; i < LEVELS.length; i++) {
-    const r = selRect(i), open = i <= unlocked, on = i === selIdx;
+    const r = selRect(i), open = true, on = i === selIdx;
     ctx.fillStyle = on ? 'rgba(224,86,63,0.92)' : 'rgba(18,24,30,0.88)'; ctx.fillRect(r.x, r.y, r.w, r.h);
     ctx.fillStyle = on ? '#ffd45a' : '#e9e2cc'; ctx.fillRect(r.x, r.y, r.w, 2); ctx.fillRect(r.x, r.y + r.h - 2, r.w, 2); ctx.fillRect(r.x, r.y, 2, r.h); ctx.fillRect(r.x + r.w - 2, r.y, 2, r.h);
     const num = String(i + 1).padStart(2, ' ');
@@ -3919,7 +3918,7 @@ function titleStart() {
   playSong('title'); sfx('select');
 }
 function setSel(i) { sel = i; menuBtns.forEach((b, k) => b.classList.toggle('sel', k === i)); }
-function choose(i) { setSel(i); sfx('select'); setTimeout(() => { if (unlocked > 0) openSelect(i === 0 ? 'levels' : 'distance'); else startRun(i === 0 ? 'levels' : 'distance', 0); }, 180); }
+function choose(i) { setSel(i); sfx('select'); setTimeout(() => openSelect(i === 0 ? 'levels' : 'distance'), 180); }
 menuBtns.forEach((b, i) => {
   b.addEventListener('click', e => { e.stopPropagation(); if (state === 'title' && titleReady) choose(i); });
   b.addEventListener('pointerenter', () => { if (titleReady && sel !== i) { setSel(i); sfx('move'); } });
