@@ -15,6 +15,13 @@ const LOCK_AFTER = 5, LOCK_SECONDS = 600;
 const SIGNUPS_PER_HOUR = 30;          // per network address
 const ITER = 100000;
 
+// Kids who already had progress before accounts existed: they start here the first time they make
+// their account (levels counted from 0, so 3 = level 4). Add a line per kid; names are not case-sensitive.
+const STARTING_LEVELS = {
+  tristin: 3,  // level 4
+  zayden: 9,   // level 10
+};
+
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
@@ -77,10 +84,11 @@ async function signup(body, env, req) {
   const key = userKey(name);
   if (await env.ACCOUNTS.get(key)) return fail('That name is taken. Try adding a number.', 409);
   const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
-  const user = { name, salt, hash: await hashPassword(pw, salt), level: 0, best: 0, created: Date.now() };
+  const level = clampLevel(STARTING_LEVELS[name.toLowerCase()] || 0);
+  const user = { name, salt, hash: await hashPassword(pw, salt), level, best: 0, created: Date.now() };
   await env.ACCOUNTS.put(key, JSON.stringify(user));
   await env.ACCOUNTS.put(ipKey, String(count + 1), { expirationTtl: 3600 });
-  return json({ token: await newSession(env, key), name, level: 0, best: 0 });
+  return json({ token: await newSession(env, key), name, level, best: 0 });
 }
 
 async function login(body, env) {
