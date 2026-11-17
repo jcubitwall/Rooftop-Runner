@@ -93,6 +93,23 @@ canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edge
 .phone::after { content: ""; position: absolute; left: 50%; bottom: 4px; width: 8px; height: 4px; margin-left: -4px; background: var(--ink); }
 @keyframes turn { 0%, 25% { transform: rotate(0deg); } 55%, 100% { transform: rotate(-90deg); } }
 @media (prefers-reduced-motion: reduce) { .phone { animation: none; transform: rotate(-90deg); } }
+/* ---------- player accounts ---------- */
+#who { top: calc(10px + env(safe-area-inset-top, 0px)); bottom: auto; right: calc(10px + env(safe-area-inset-right, 0px)); width: auto; height: 36px; max-width: 46vw; padding: 0 12px; font-size: 10px; color: #ffd45a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#acct { position: fixed; inset: 0; z-index: 12; display: flex; padding: 8px; overflow: auto; touch-action: pan-y; background: rgba(4,8,12,.74); }
+#acct[hidden] { display: none; }
+#acct .box { margin: auto; width: min(380px, 94vw); background: rgba(18,24,30,.96); border: 4px solid #e9e2cc; box-shadow: inset 0 4px 0 #8f2b22; padding: 16px 18px; text-align: center; color: #fff6e0; }
+#acct p { margin: 0 0 12px; font-size: 12px; line-height: 1.7; }
+#acct label { display: block; text-align: left; font-size: 9px; color: #b9c0c8; margin-bottom: 10px; }
+#acct input { display: block; width: 100%; margin-top: 6px; padding: 8px; border-radius: 0; font: 16px "Press Start 2P", ui-monospace, Menlo, Consolas, monospace; color: #fff6e0; background: #0b1015; border: 3px solid #e9e2cc; user-select: text; -webkit-user-select: text; touch-action: manipulation; }
+#acct input:focus { outline: none; border-color: #ffd45a; }
+#acct #acctMsg { min-height: 1.7em; margin: 0 0 8px; font-size: 9px; color: #ffb08a; }
+#acct #acctMsg.ok { color: #b9c0c8; }
+#acct .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+#acct button { font: 11px "Press Start 2P", ui-monospace, Menlo, Consolas, monospace; padding: 10px 12px; cursor: pointer; color: #fff6e0; background: rgba(18,24,30,.9); border: 3px solid #e9e2cc; }
+#acct button.sel { background: #e0563f; color: #fff; border-color: #ffd45a; }
+#acct button:disabled { opacity: .5; }
+#acct button.link { margin-top: 14px; padding: 6px; border: 0; background: transparent; color: #b9c0c8; font-size: 9px; text-decoration: underline; }
+#acct button:focus-visible { outline: 3px solid var(--btn-fg); outline-offset: 2px; }
 #fs { font: 10px "Press Start 2P", ui-monospace, Menlo, Consolas, monospace; padding: 12px 14px; cursor: pointer; color: var(--btn-fg); background: var(--btn-bg); border: 3px solid #0e161c; }
 </style>
 </head>
@@ -111,12 +128,26 @@ canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edge
     </div>
     <p class="foot">TM AND © 2026 HUNT GAMES</p>
   </div>
+  <button type="button" id="who" class="hud-btn" aria-label="Choose player" hidden>SIGN IN</button>
 </div>
 
 <button id="home" class="hud-btn" aria-label="Back to title screen" title="Title screen (Esc)" hidden>
   <svg viewBox="0 0 9 8" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M4 0h1v1h1v1h1v1h1v1h1v1H8v3H5V6H4v2H1V5H0V4h1V3h1V2h1V1h1z"/></svg>
 </button>
 <div id="confirm" hidden role="dialog" aria-modal="true" aria-labelledby="confirmMsg"><div class="box"><p id="confirmMsg">Return to the<br>Home Screen?</p><div class="row"><button id="cYes">YES</button><button id="cNo" class="sel">NO</button></div></div></div>
+<div id="acct" hidden role="dialog" aria-modal="true" aria-labelledby="acctHead">
+  <form class="box" id="acctForm" novalidate>
+    <p id="acctHead">WHO'S PLAYING?</p>
+    <div id="acctFields">
+      <label>NAME<input id="acctName" name="username" autocomplete="username" maxlength="16" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="next"></label>
+      <label>PASSWORD<input id="acctPw" name="password" type="password" autocomplete="current-password" maxlength="30" enterkeyhint="go"></label>
+    </div>
+    <p id="acctMsg" role="status"></p>
+    <div class="row" id="acctAuth"><button type="submit" id="acctIn" class="sel">SIGN IN</button><button type="button" id="acctNew">NEW PLAYER</button></div>
+    <div class="row" id="acctSigned" hidden><button type="button" id="acctGo" class="sel">PLAY</button><button type="button" id="acctOut">SWITCH PLAYER</button></div>
+    <button type="button" id="acctGuest" class="link">PLAY AS GUEST</button>
+  </form>
+</div>
 <button id="mute" class="hud-btn" aria-label="Toggle sound" aria-pressed="false" title="Sound (M)"><svg viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M4 0h4v1h1v2H8V2H5v5H4V6H3V5h1zM1 6h3v1h1v1H4v1H1V8H0V7h1z"/><path class="slash" d="M8 0h1v1H8zM7 1h1v1H7zM6 2h1v1H6zM5 3h1v1H5zM4 4h1v1H4zM3 5h1v1H3zM2 6h1v1H2zM1 7h1v1H1zM0 8h1v1H0z"/></svg></button>
 <div id="rotate" hidden>
   <div class="phone" aria-hidden="true"></div>
@@ -3351,7 +3382,7 @@ function hitGround() {
     p.y = 0; sfx('thud'); shake = .4;
     puff(p.x + 8, 0, 16, '#b9a88c', 70, 50, 90, .7);
   }
-  if (mode === 'distance' && dist > best) { best = dist; newBest = true; try { localStorage.setItem('rooftop-runner-ns-best', String(best)); } catch (e) {} }
+  if (mode === 'distance' && dist > best) { best = dist; newBest = true; saveBest(); }
 }
 function startFinish() {
   const p = player;
@@ -3798,8 +3829,123 @@ try { unlocked = clamp(parseInt(localStorage.getItem(PROG_KEY) || '0', 10) || 0,
 function saveProgress(idx) {
   if (idx <= unlocked) return;
   unlocked = clamp(idx, 0, LEVELS.length - 1);
+  if (acct) { acct.level = unlocked; syncAcct(); return; }
+  guest.level = unlocked;
   try { localStorage.setItem(PROG_KEY, String(unlocked)); } catch (e) {}
 }
+
+// ---------- player accounts: name + password, progress kept on the server in server/worker.js ----------
+const API_URL = ''; // paste the Cloudflare Worker address here, e.g. 'https://rooftop-runner-accounts.NAME.workers.dev'
+const ACCT_KEY = 'rooftop-runner-account';
+const guest = { level: unlocked, best };
+let acct = null, guestChosen = false, acctBusy = false, syncing = false, syncAgain = false;
+try { acct = JSON.parse(localStorage.getItem(ACCT_KEY) || 'null'); } catch (e) { acct = null; }
+if (!API_URL || !acct || !acct.token) acct = null;
+const acctEl = document.getElementById('acct'), acctForm = document.getElementById('acctForm');
+const acctName = document.getElementById('acctName'), acctPw = document.getElementById('acctPw');
+const acctHead = document.getElementById('acctHead'), acctMsg = document.getElementById('acctMsg');
+const acctFields = document.getElementById('acctFields'), acctAuth = document.getElementById('acctAuth'), acctSigned = document.getElementById('acctSigned');
+const acctGuest = document.getElementById('acctGuest'), whoBtn = document.getElementById('who');
+function storeAcct() { try { if (acct) localStorage.setItem(ACCT_KEY, JSON.stringify(acct)); else localStorage.removeItem(ACCT_KEY); } catch (e) {} }
+function updateWho() { whoBtn.hidden = !API_URL; whoBtn.textContent = acct ? acct.name.toUpperCase() : 'SIGN IN'; }
+function applyAcct() {
+  if (acct) { unlocked = clamp(acct.level | 0, 0, LEVELS.length - 1); best = acct.best | 0; }
+  else { unlocked = guest.level; best = guest.best; }
+  updateWho();
+}
+function saveBest() {
+  if (acct) { acct.best = best; syncAcct(); return; }
+  guest.best = best;
+  try { localStorage.setItem('rooftop-runner-ns-best', String(best)); } catch (e) {}
+}
+async function api(path, data) {
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 9000);
+  try {
+    const r = await fetch(API_URL.replace(/\/+$/, '') + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), signal: ctl.signal });
+    let j = {}; try { j = await r.json(); } catch (e) {}
+    if (!r.ok) { const err = new Error(j.error || 'Something went wrong. Try again.'); err.status = r.status; throw err; }
+    return j;
+  } catch (e) {
+    if (e.status) throw e;
+    const err = new Error('No internet connection. Try again.'); err.status = 0; throw err;
+  } finally { clearTimeout(t); }
+}
+function mergeAcct(r) {
+  acct.level = Math.max(acct.level | 0, r.level | 0); acct.best = Math.max(acct.best | 0, r.best | 0); storeAcct();
+  unlocked = Math.max(unlocked, clamp(acct.level, 0, LEVELS.length - 1)); best = Math.max(best, acct.best);
+}
+async function syncAcct() {
+  if (!acct) return;
+  acct.dirty = true; storeAcct();
+  if (syncing) { syncAgain = true; return; }
+  syncing = true;
+  const a = acct;
+  try { const r = await api('/save', { token: a.token, level: a.level, best: a.best }); if (acct === a) { a.dirty = false; mergeAcct(r); } }
+  catch (e) { if (e.status === 401 && acct === a) signedOut('Please sign in again.'); }
+  syncing = false;
+  if (syncAgain) { syncAgain = false; syncAcct(); }
+}
+async function refreshAcct() {
+  if (!acct) return;
+  const a = acct;
+  try {
+    const r = await api('/me', { token: a.token });
+    if (acct !== a) return;
+    const behind = a.dirty || (a.level | 0) > (r.level | 0) || (a.best | 0) > (r.best | 0);
+    mergeAcct(r);
+    if (behind) syncAcct();
+  } catch (e) { if (e.status === 401 && acct === a) signedOut('Please sign in again.'); }
+}
+function signedOut(msg) {
+  acct = null; storeAcct(); applyAcct();
+  if (state === 'title' && titleReady) openAcct(msg);
+}
+function setMsg(m, ok) { acctMsg.textContent = m || ''; acctMsg.classList.toggle('ok', !!ok); }
+function showAcctView() {
+  const signed = !!acct;
+  acctHead.textContent = signed ? 'PLAYING AS ' + acct.name.toUpperCase() : "WHO'S PLAYING?";
+  acctFields.hidden = signed; acctAuth.hidden = signed; acctSigned.hidden = !signed; acctGuest.hidden = signed;
+}
+function openAcct(msg) {
+  if (!API_URL) return;
+  showAcctView(); setMsg(msg || '');
+  acctEl.hidden = false;
+  if (window.matchMedia && matchMedia('(pointer: fine)').matches) (acct ? document.getElementById('acctGo') : acctName).focus();
+}
+function closeAcct() { acctEl.hidden = true; if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }
+async function doAuth(path) {
+  if (acctBusy) return;
+  const name = acctName.value.trim().replace(/\s+/g, ' '), password = acctPw.value;
+  if (name.length < 2) { setMsg('Type your name.'); acctName.focus(); return; }
+  if (!/^[A-Za-z0-9 ]+$/.test(name)) { setMsg('Names can only use letters and numbers.'); acctName.focus(); return; }
+  if (password.length < 4) { setMsg('Passwords need at least 4 characters.'); acctPw.focus(); return; }
+  acctBusy = true; acctForm.querySelectorAll('button').forEach(b => b.disabled = true);
+  setMsg(path === '/signup' ? 'Making your player...' : 'Signing in...', true);
+  try {
+    const r = await api(path, { name, password });
+    acct = { name: r.name, token: r.token, level: r.level | 0, best: r.best | 0 };
+    storeAcct(); applyAcct(); acctPw.value = ''; closeAcct(); sfx('select');
+  } catch (e) { setMsg(e.message); sfx('bonk'); }
+  acctBusy = false; acctForm.querySelectorAll('button').forEach(b => b.disabled = false);
+}
+acctForm.addEventListener('submit', e => { e.preventDefault(); doAuth('/login'); });
+document.getElementById('acctNew').addEventListener('click', e => { e.stopPropagation(); doAuth('/signup'); });
+document.getElementById('acctGo').addEventListener('click', e => { e.stopPropagation(); closeAcct(); sfx('select'); });
+document.getElementById('acctOut').addEventListener('click', e => {
+  e.stopPropagation();
+  const a = acct;
+  if (a) api('/save', { token: a.token, level: a.level, best: a.best }).catch(() => {}).then(() => api('/logout', { token: a.token })).catch(() => {});
+  acct = null; storeAcct(); applyAcct(); acctName.value = ''; acctPw.value = '';
+  showAcctView(); setMsg(''); sfx('move');
+});
+acctGuest.addEventListener('click', e => { e.stopPropagation(); guestChosen = true; closeAcct(); sfx('select'); });
+acctEl.addEventListener('keydown', e => { if (e.code === 'Escape') { e.preventDefault(); if (!acct) guestChosen = true; closeAcct(); } });
+acctEl.addEventListener('pointerdown', e => e.stopPropagation());
+whoBtn.addEventListener('pointerdown', e => e.stopPropagation());
+whoBtn.addEventListener('click', e => { e.stopPropagation(); initAudio(); openAcct(); });
+applyAcct();
+refreshAcct();
+window.addEventListener('online', () => { if (acct && acct.dirty) syncAcct(); });
 const SEL_COLS = 2, SEL_ROWS = 6;
 function selRect(i) {
   if (i === LEVELS.length) return { x: Math.round(W / 2 - 40), y: H - 34, w: 80, h: 18 };
@@ -3917,11 +4063,12 @@ function titleStart() {
   if (titleReady) return;
   titleReady = true; pressEl.hidden = true; menuEl.hidden = false; setSel(0);
   playSong('title'); sfx('select');
+  if (API_URL && !acct && !guestChosen) openAcct();
 }
 function setSel(i) { sel = i; menuBtns.forEach((b, k) => b.classList.toggle('sel', k === i)); }
 function choose(i) { setSel(i); sfx('select'); setTimeout(() => { if (unlocked > 0) openSelect(i === 0 ? 'levels' : 'distance'); else startRun(i === 0 ? 'levels' : 'distance', 0); }, 180); }
 menuBtns.forEach((b, i) => {
-  b.addEventListener('click', e => { e.stopPropagation(); if (state === 'title' && titleReady) choose(i); });
+  b.addEventListener('click', e => { e.stopPropagation(); if (state === 'title' && titleReady && acctEl.hidden) choose(i); });
   b.addEventListener('pointerenter', () => { if (titleReady && sel !== i) { setSel(i); sfx('move'); } });
 });
 titleEl.addEventListener('pointerdown', e => { if (!titleReady) { e.preventDefault(); titleStart(); } });
@@ -3980,12 +4127,13 @@ window.addEventListener('pointerup', release);
 window.addEventListener('pointercancel', release);
 window.addEventListener('keyup', e => { if (['Space', 'ArrowUp', 'KeyW', 'Enter'].includes(e.code)) release(); });
 window.addEventListener('pointerdown', e => {
-  if (paused || (e.target.closest && (e.target.closest('button') || e.target.closest('#rotate') || e.target.closest('#confirm') || e.target.closest('#title')))) return;
+  if (paused || (e.target.closest && (e.target.closest('button') || e.target.closest('#rotate') || e.target.closest('#confirm') || e.target.closest('#title') || e.target.closest('#acct')))) return;
   e.preventDefault();
   if (state === 'select') { const r = cvs.getBoundingClientRect(); selectAt((e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H); return; }
   press();
 }, { passive: false });
 window.addEventListener('keydown', e => {
+  if (!acctEl.hidden) return;
   if (e.code === 'KeyM') { toggleMute(); return; }
   if (state === 'title') {
     if (!titleReady) { if (['Space', 'Enter', 'ArrowUp', 'ArrowDown', 'KeyW', 'KeyS'].includes(e.code)) { e.preventDefault(); titleStart(); } return; }
@@ -4032,7 +4180,7 @@ cYes.addEventListener('click', e => { e.stopPropagation(); closeAsk(true); });
 cNo.addEventListener('click', e => { e.stopPropagation(); closeAsk(false); });
 confirmEl.addEventListener('pointerdown', e => { e.stopPropagation(); if (e.target === confirmEl) closeAsk(false); });
 homeBtn.addEventListener('click', e => { e.stopPropagation(); askHome(); });
-document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+document.addEventListener('touchmove', e => { if (!(e.target.closest && e.target.closest('#acct'))) e.preventDefault(); }, { passive: false });
 document.addEventListener('visibilitychange', () => { if (!A.ctx) return; if (document.hidden) A.ctx.suspend(); else if (!portrait) A.ctx.resume(); });
 window.addEventListener('resize', resize);
 window.addEventListener('orientationchange', () => setTimeout(resize, 200));
